@@ -20,12 +20,21 @@ const http = require('http');
  */
 async function detectBestModel(baseUrl, endpoint, defaultPort, preferredModels, extractModels) {
     return new Promise((resolve) => {
-        const url = new URL(endpoint, baseUrl);
+        const parsedBaseUrl = new URL(baseUrl);
+        
+        // Build path: If baseUrl already contains a path (e.g., /v1), merge it with endpoint
+        let path = endpoint;
+        if (parsedBaseUrl.pathname && parsedBaseUrl.pathname !== '/') {
+            const basePath = parsedBaseUrl.pathname.replace(/\/$/, '');
+            // If baseUrl already has /v1, remove it from endpoint to avoid duplication
+            const endpointPath = endpoint.replace(/^\/v1/, '');
+            path = basePath + endpointPath;
+        }
         
         const req = http.get({
-            hostname: url.hostname,
-            port: url.port || defaultPort,
-            path: endpoint,
+            hostname: parsedBaseUrl.hostname,
+            port: parsedBaseUrl.port || defaultPort,
+            path: path,
             timeout: 5000
         }, (res) => {
             let data = '';
@@ -70,10 +79,13 @@ async function testConnection(url, defaultPort = 80, timeout = 3000) {
     return new Promise((resolve) => {
         const testUrl = new URL(url);
         
+        // Use the path from the URL if provided, otherwise default to '/'
+        const path = testUrl.pathname && testUrl.pathname !== '/' ? testUrl.pathname : '/';
+        
         const req = http.get({
             hostname: testUrl.hostname,
             port: testUrl.port || defaultPort,
-            path: '/',
+            path: path,
             timeout: timeout
         }, (res) => {
             resolve(res.statusCode === 200 || res.statusCode === 404); // 404 is ok, means server is running

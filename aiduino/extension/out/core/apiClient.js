@@ -577,10 +577,19 @@ class UnifiedAPIClient {
             const http = require('http');
             const parsedUrl = new URL(baseUrl);
             
+            // Build path: If baseUrl already contains a path (e.g., /v1), merge it with endpoint
+            let path = provider.httpConfig.endpoint;
+            if (parsedUrl.pathname && parsedUrl.pathname !== '/') {
+                const basePath = parsedUrl.pathname.replace(/\/$/, '');
+                // If baseUrl already has /v1, remove it from endpoint to avoid duplication
+                const endpointPath = path.replace(/^\/v1/, '');
+                path = basePath + endpointPath;
+            }
+            
             const req = http.request({
                 hostname: parsedUrl.hostname,
                 port: parsedUrl.port || provider.defaultPort || 80, 
-                path: provider.httpConfig.endpoint,
+                path: path,
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',

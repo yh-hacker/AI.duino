@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.1
+* Fixed API endpoint path handling for local providers
+* Now supports both URLs with and without `/v1` path suffix (e.g., `https://api.deepseek.com` and `https://api.deepseek.com/v1`)
+* Fixed path duplication issue that caused connection failures with some API providers
+* Improved URL parsing logic in local provider HTTP requests, model discovery, and connection testing
+
 ## 2.8.0
 * Added NVIDIA BUILD platform support
 * Added DeepSeek-V4-Pro and DeepSeek-V4-Flash models

@@ -165,8 +165,18 @@ async function fetchModelsFromLocalProvider(providerId, providerConfig, baseUrl,
     // Clean up base URL
     baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
     
-    // Build full URL
-    const url = `${baseUrl}${endpoint}`;
+    // Build full URL: If baseUrl already contains a path (e.g., /v1), merge it with endpoint
+    let url = `${baseUrl}${endpoint}`;
+    try {
+        const parsedUrl = new URL(baseUrl);
+        if (parsedUrl.pathname && parsedUrl.pathname !== '/') {
+            // If baseUrl already has /v1, remove it from endpoint to avoid duplication
+            const finalEndpoint = endpoint.replace(/^\/v1/, '');
+            url = `${baseUrl}${finalEndpoint}`;
+        }
+    } catch {
+        // URL parsing failed, use as-is
+    }
     console.log(`[ModelDiscovery] Fetching from local provider: ${url}`);
 
     const protocol = baseUrl.startsWith('https') ? https : http;
