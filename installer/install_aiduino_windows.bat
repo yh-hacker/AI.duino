@@ -10,16 +10,13 @@ echo.
 set "EXTENSIONS_DIR=%USERPROFILE%\.arduinoIDE\extensions"
 set "DEPLOYED_DIR=%USERPROFILE%\.arduinoIDE\deployedPlugins"
 set "SCRIPT_DIR=%~dp0"
-set "VERSION=2.7.1"
 
-REM Find VSIX file - prefer versioned, then unversioned
+REM Find VSIX file (versioned or not)
 set "VSIX_FILE="
-if exist "%SCRIPT_DIR%aiduino-%VERSION%.vsix" (
-    set "VSIX_FILE=%SCRIPT_DIR%aiduino-%VERSION%.vsix"
-) else if exist "%SCRIPT_DIR%aiduino.vsix" (
+if exist "%SCRIPT_DIR%aiduino.vsix" (
     set "VSIX_FILE=%SCRIPT_DIR%aiduino.vsix"
 ) else (
-    REM Look for any versioned VSIX
+    REM Look for versioned VSIX (e.g., aiduino-2.6.0.vsix)
     for /f "delims=" %%i in ('dir /b /o-n "%SCRIPT_DIR%aiduino-*.vsix" 2^>nul') do (
         set "VSIX_FILE=%SCRIPT_DIR%%%i"
         goto :found
