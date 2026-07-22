@@ -1,74 +1,81 @@
-#!/bin/bash
-# AI.duino Extension Installer
+@echo off
+setlocal enabledelayedexpansion
+chcp 65001 >nul 2>&1
 
-# Configuration
-EXTENSIONS_DIR="$HOME/.arduinoIDE/extensions"
-DEPLOYED_DIR="$HOME/.arduinoIDE/deployedPlugins"
-SCRIPT_DIR="$(dirname "$0")"
-VERSION="2.7.1"
+echo ================================
+echo AI.duino Extension Installer
+echo ================================
+echo.
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[0;33m'
-NC='\033[0m'
+set "EXTENSIONS_DIR=%USERPROFILE%\.arduinoIDE\extensions"
+set "DEPLOYED_DIR=%USERPROFILE%\.arduinoIDE\deployedPlugins"
+set "SCRIPT_DIR=%~dp0"
+<<<<<<< HEAD
+set "VERSION=2.8.0"
+=======
+>>>>>>> 566c781e237c1d4b220664301bb5dff20f4dca5f
 
-echo -e "${BLUE}AI.duino Extension Installer${NC}"
-echo "================================"
-echo
+REM Find VSIX file (versioned or not)
+set "VSIX_FILE="
+if exist "%SCRIPT_DIR%aiduino.vsix" (
+    set "VSIX_FILE=%SCRIPT_DIR%aiduino.vsix"
+) else (
+    REM Look for versioned VSIX (e.g., aiduino-2.6.0.vsix)
+    for /f "delims=" %%i in ('dir /b /o-n "%SCRIPT_DIR%aiduino-*.vsix" 2^>nul') do (
+        set "VSIX_FILE=%SCRIPT_DIR%%%i"
+        goto :found
+    )
+)
+:found
 
-# Find VSIX file (versioned or not)
-VSIX_FILE=""
-if [ -f "$SCRIPT_DIR/aiduino-${VERSION}.vsix" ]; then
-    VSIX_FILE="$SCRIPT_DIR/aiduino-${VERSION}.vsix"
-elif [ -f "$SCRIPT_DIR/aiduino.vsix" ]; then
-    VSIX_FILE="$SCRIPT_DIR/aiduino.vsix"
-else
-    # Look for any versioned VSIX
-    VSIX_FILE=$(ls "$SCRIPT_DIR"/aiduino-*.vsix 2>/dev/null | sort -V | tail -n 1)
-fi
+REM Check if VSIX file exists
+if not defined VSIX_FILE (
+    echo [Error] No aiduino*.vsix file found in folder:
+    echo %SCRIPT_DIR%
+    echo.
+    echo Looking for: aiduino.vsix or aiduino-*.vsix
+    echo Please make sure the file is in the same folder as this installer.
+    echo.
+    pause
+    exit /b 1
+)
 
-# Check if VSIX exists
-if [ -z "$VSIX_FILE" ] || [ ! -f "$VSIX_FILE" ]; then
-    echo -e "${RED}Error: No aiduino*.vsix file found${NC}"
-    echo "Looking for: aiduino.vsix or aiduino-*.vsix"
-    exit 1
-fi
+for %%F in ("%VSIX_FILE%") do set "VSIX_FILENAME=%%~nxF"
+echo Found: %VSIX_FILENAME%
+echo.
 
-VSIX_FILENAME=$(basename "$VSIX_FILE")
-echo "Found: $VSIX_FILENAME"
-echo
+REM Create folder if it doesn't exist
+if not exist "%EXTENSIONS_DIR%" (
+    echo Creating extension directory...
+    mkdir "%EXTENSIONS_DIR%"
+)
 
-# Create extensions directory
-if [ ! -d "$EXTENSIONS_DIR" ]; then
-    echo "Creating extensions directory..."
-    mkdir -p "$EXTENSIONS_DIR"
-fi
+REM Remove old versions (all aiduino*.vsix files)
+echo Cleaning up old installations...
+del /q "%EXTENSIONS_DIR%\aiduino*.vsix" 2>nul
 
-# Clean up old installations (all versions)
-echo "Cleaning up old installations..."
-rm -f "$EXTENSIONS_DIR"/aiduino*.vsix 2>/dev/null
-if ls "$DEPLOYED_DIR"/aiduino* 1> /dev/null 2>&1; then
-    echo -e "${YELLOW}Removing old deployed extension(s)...${NC}"
-    rm -rf "$DEPLOYED_DIR"/aiduino*
-fi
+REM Remove old deployed extensions (all versions)
+for /d %%D in ("%DEPLOYED_DIR%\aiduino*") do (
+    echo Removing old deployed extension: %%~nxD
+    rmdir /s /q "%%D"
+)
 
-# Copy new VSIX
-echo "Installing AI.duino extension..."
-cp "$VSIX_FILE" "$EXTENSIONS_DIR/"
+REM Copy new file
+echo Installing new extension...
+copy "%VSIX_FILE%" "%EXTENSIONS_DIR%\" >nul
 
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ Extension installed successfully!${NC}"
-    echo
-    echo "File: $VSIX_FILENAME"
-    echo "Location: $EXTENSIONS_DIR/"
-    echo
-    echo "Restart Arduino IDE to use the extension."
-else
-    echo -e "${RED}✗ Installation failed${NC}"
-    exit 1
-fi
+if %ERRORLEVEL% EQU 0 (
+    echo.
+    echo [Success] Extension installed successfully!
+    echo.
+    echo File: %VSIX_FILENAME%
+    echo Location: %EXTENSIONS_DIR%
+    echo.
+    echo Restart Arduino IDE to use the extension.
+) else (
+    echo.
+    echo [Error] Installation failed
+)
 
-echo
-read -p "Press Enter to continue..."
+echo.
+pause
