@@ -171,9 +171,6 @@ C:\Program Files\Arduino IDE\resources\app\plugins\
 
 如果您手动将 AI.duino 安装到插件文件夹中，则需要自己删除它。AI.duino 没有权限执行此操作。
 
-## VS Code
-您可以直接从 VS Code 扩展管理器中的市场下载 AI.duino。
-
 ## API Keys 和本地提供商
 
 AI.duino 通过 API 与 AI 通信。无法通过 Web 界面连接，因此 API 密钥是 **必需的**。如果您已有月度付费账户，您需要 - *叹气* - 额外购买约 **$5** 的密钥。幸运的是，这真的能用很久。像 Mistral 这样的提供商在您有月度付费账户时会免费提供 API 密钥。
