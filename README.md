@@ -227,6 +227,4 @@ Root directory with some explanation files
 
 ## 💙 Support AI.duino
 
-AI.duino 是免费开源的。如果它帮到了你，请考虑支持开发！🚀
-
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/yh-hacker?style=for-the-badge&logo=github&color=ea4aaa)](https://github.com/sponsors/yh-hacker)
+AI.duino 是免费开源的。如果它帮到了你，欢迎在面板内赞助支持开发！🚀
