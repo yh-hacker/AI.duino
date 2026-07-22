@@ -73,7 +73,16 @@
     "notesCreated": "✅ NOTES.ino已创建！",
     "highCostWarning": "预估成本（不含响应）：${0}（使用{1}）。继续？",
     "codeApplied": "代码已应用",
-    "nodePathSaved": "Node.js路径已保存"
+    "nodePathSaved": "Node.js路径已保存",
+    "customEndpointPrompt": "输入API端点URL（兼容OpenAI）",
+    "customEndpointPlaceholder": "https://api.example.com",
+    "customEndpointRequired": "端点URL为必填项",
+    "customEndpointInvalid": "请输入有效的URL（例如 https://api.example.com）",
+    "customApiKeyPrompt": "输入您的API密钥",
+    "customApiKeyPlaceholder": "sk-...",
+    "customApiKeyRequired": "API密钥为必填项",
+    "customModelPrompt": "输入模型ID（留空使用默认值）",
+    "customModelPlaceholder": "gpt-4, claude-3-opus 等"
   },
   "buttons": {
     "chooseModel": "选择AI模型",
@@ -92,6 +101,7 @@
     "keepBoth": "保留两者",
     "copySolution": "复制解决方案",
     "copy": "复制",
+    "paste": "粘贴",
     "resetStats": "重置统计",
     "getApiKey": "获取API密钥",
     "checkConnection": "检查连接",

@@ -92,6 +92,7 @@
     "keepBoth": "Pidä molemmat",
     "copySolution": "Kopioi Ratkaisu",
     "copy": "Kopioi",
+    "paste": "Liitä",
     "resetStats": "Nollaa Tilastot",
     "getApiKey": "Hanki API-avain",
     "checkConnection": "Tarkista Yhteys",

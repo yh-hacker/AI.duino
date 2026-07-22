@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.0
+* Added NVIDIA BUILD platform support
+* Added DeepSeek-V4-Pro and DeepSeek-V4-Flash models
+* Fixed various bugs
+
 ## 2.7.1
 * Added support for custom OpenAI-compatible API endpoints
 * Added configuration options for custom API endpoint, API key, and model ID

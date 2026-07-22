@@ -65,7 +65,7 @@ your_provider: {
 */
 
 // Version
-const CONFIG_VERSION = '180526'; 
+const CONFIG_VERSION = '220726'; 
 const REMOTE_CONFIG_URL = 'https://raw.githubusercontent.com/yh-hacker/AI.duino/refs/heads/main/aiduino/extension/out/config/providerConfigs.js';
 
 // All AI provider configurations
@@ -1247,6 +1247,80 @@ const PROVIDER_CONFIGS = {
         prices: {
             input: 0.0,
             output: 0.0
+        }
+    },
+
+    nvidia: {
+        name: 'NVIDIA BUILD',
+        icon: '🟢',
+        color: '#76B900',
+        keyFile: '.aiduino-nvidia-api-key',
+        keyPrefix: 'nvapi-',
+        keyMinLength: 20,
+        hostname: 'integrate.api.nvidia.com',
+        apiKeyUrl: 'https://integrate.api.nvidia.com',
+        path: '/v1/health',
+        requiresModelSelection: true,
+        headers: (key) => ({ 'Authorization': `Bearer ${key}` }),
+        availableModels: [
+            {
+                id: 'deepseek-ai/deepseek-v4-pro',
+                name: 'DeepSeek V4 Pro',
+            },
+            {
+                id: 'deepseek-ai/deepseek-v4-flash',
+                name: 'DeepSeek V4 Flash',
+            }
+        ],
+        extractModels: (data) => data.data || [],
+        fallback: 'deepseek-ai/deepseek-v4-pro',
+        modelDiscovery: {
+            enabled: false,
+            staticModels: [
+                { id: 'deepseek-ai/deepseek-v4-pro', name: 'DeepSeek V4 Pro', displayName: 'DeepSeek V4 Pro' },
+                { id: 'deepseek-ai/deepseek-v4-flash', name: 'DeepSeek V4 Flash', displayName: 'DeepSeek V4 Flash' }
+            ],
+            selectDefault: (models) => models.find(m => m.id?.includes('deepseek-v4-pro')) || models[0]
+        },
+        prices: {
+            input: 0.27 / 1000000,
+            output: 1.10 / 1000000
+        },
+        apiConfig: {
+            apiPath: '/v1/chat/completions',
+            method: 'POST',
+            headers: (key) => ({
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${key}`
+            }),
+            buildRequest: (modelId, prompt, systemPrompt) => {
+                const messages = [];
+                if (systemPrompt && typeof systemPrompt === 'string' && systemPrompt.trim()) {
+                    messages.push({ role: "system", content: systemPrompt.trim() });
+                }
+                messages.push({ role: "user", content: prompt });
+                return {
+                    model: modelId,
+                    messages: messages,
+                    max_tokens: 16384,
+                    stream: false,
+                    temperature: 0.6,
+                    top_p: 0.95,
+                    top_k: 20,
+                    presence_penalty: 0,
+                    repetition_penalty: 1
+                };
+            },
+            extractResponse: (data) => {
+                if (data.error) {
+                    const msg = data.error.message || data.error.code || JSON.stringify(data.error);
+                    throw new Error(msg);
+                }
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    return data.choices[0].message.content;
+                }
+                throw new Error('Unexpected NVIDIA BUILD API response format');
+            }
         }
     },
 

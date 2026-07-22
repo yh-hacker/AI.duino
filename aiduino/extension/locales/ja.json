@@ -70,7 +70,16 @@
     "notesCreated": "✅ NOTES.inoが作成されました！",
     "highCostWarning": "推定コスト（応答なし）：${0}（{1}使用）。続行しますか？",
     "codeApplied": "コードが適用されました",
-    "nodePathSaved": "Node.jsパスが保存されました"
+    "nodePathSaved": "Node.jsパスが保存されました",
+    "customEndpointPrompt": "APIエンドポイントURLを入力（OpenAI互換）",
+    "customEndpointPlaceholder": "https://api.example.com",
+    "customEndpointRequired": "エンドポイントURLは必須です",
+    "customEndpointInvalid": "有効なURLを入力してください（例：https://api.example.com）",
+    "customApiKeyPrompt": "APIキーを入力",
+    "customApiKeyPlaceholder": "sk-...",
+    "customApiKeyRequired": "APIキーは必須です",
+    "customModelPrompt": "モデルIDを入力（デフォルトの場合は空欄）",
+    "customModelPlaceholder": "gpt-4, claude-3-opus など"
   },
   "buttons": {
     "chooseModel": "AIモデルを選択",
@@ -89,6 +98,7 @@
     "keepBoth": "両方を保持",
     "copySolution": "解決策をコピー",
     "copy": "コピー",
+    "paste": "貼り付け",
     "resetStats": "統計をリセット",
     "getApiKey": "APIキーを取得",
     "checkConnection": "接続を確認",

@@ -10,7 +10,7 @@ echo.
 set "EXTENSIONS_DIR=%USERPROFILE%\.arduinoIDE\extensions"
 set "DEPLOYED_DIR=%USERPROFILE%\.arduinoIDE\deployedPlugins"
 set "SCRIPT_DIR=%~dp0"
-set "VERSION=2.7.1"
+set "VERSION=2.8.0"
 
 REM Find VSIX file - prefer versioned, then unversioned
 set "VSIX_FILE="

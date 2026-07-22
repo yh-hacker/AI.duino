@@ -92,6 +92,7 @@
     "keepBoth": "Mindkettő megtartása",
     "copySolution": "Megoldás másolása",
     "copy": "Másolás",
+    "paste": "Beillesztés",
     "resetStats": "Statisztikák visszaállítása",
     "getApiKey": "API kulcs beszerzése",
     "checkConnection": "Kapcsolat ellenőrzése",

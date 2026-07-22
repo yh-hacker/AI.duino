@@ -73,7 +73,16 @@
     "notesCreated": "✅ NOTES.ino erstellt!",
     "highCostWarning": "Geschätzte Kosten (ohne Antwort): ${0} mit {1}. Fortfahren?",
     "codeApplied": "Code wurde übernommen",
-    "nodePathSaved": "Node.js-Pfad wurde gespeichert"
+    "nodePathSaved": "Node.js-Pfad wurde gespeichert",
+    "customEndpointPrompt": "API-Endpunkt-URL eingeben (OpenAI-kompatibel)",
+    "customEndpointPlaceholder": "https://api.example.com",
+    "customEndpointRequired": "Endpunkt-URL ist erforderlich",
+    "customEndpointInvalid": "Bitte geben Sie eine gültige URL ein (z.B. https://api.example.com)",
+    "customApiKeyPrompt": "API-Schlüssel eingeben",
+    "customApiKeyPlaceholder": "sk-...",
+    "customApiKeyRequired": "API-Schlüssel ist erforderlich",
+    "customModelPrompt": "Modell-ID eingeben (leer lassen für Standard)",
+    "customModelPlaceholder": "gpt-4, claude-3-opus, etc."
   },
   "buttons": {
     "chooseModel": "KI-Modell wählen",
@@ -92,6 +101,7 @@
     "keepBoth": "Beide behalten",
     "copySolution": "Lösung kopieren",
     "copy": "Kopieren",
+    "paste": "Einfügen",
     "resetStats": "Statistik zurücksetzen",
     "getApiKey": "API-Schlüssel holen",
     "checkConnection": "Verbindung prüfen",

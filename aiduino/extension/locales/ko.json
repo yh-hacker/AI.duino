@@ -73,7 +73,16 @@
     "notesCreated": "✅ NOTES.ino가 생성되었습니다!",
     "highCostWarning": "예상 비용(응답 제외): ${0} ({1} 사용). 계속하시겠습니까?",
     "codeApplied": "코드가 적용되었습니다",
-    "nodePathSaved": "Node.js 경로가 저장되었습니다"
+    "nodePathSaved": "Node.js 경로가 저장되었습니다",
+    "customEndpointPrompt": "API 엔드포인트 URL 입력 (OpenAI 호환)",
+    "customEndpointPlaceholder": "https://api.example.com",
+    "customEndpointRequired": "엔드포인트 URL은 필수입니다",
+    "customEndpointInvalid": "유효한 URL을 입력하세요 (예: https://api.example.com)",
+    "customApiKeyPrompt": "API 키 입력",
+    "customApiKeyPlaceholder": "sk-...",
+    "customApiKeyRequired": "API 키는 필수입니다",
+    "customModelPrompt": "모델 ID 입력 (기본값은 비워두세요)",
+    "customModelPlaceholder": "gpt-4, claude-3-opus 등"
   },
   "buttons": {
     "chooseModel": "AI 모델 선택",
@@ -92,6 +101,7 @@
     "keepBoth": "둘 다 유지",
     "copySolution": "솔루션 복사",
     "copy": "복사",
+    "paste": "붙여넣기",
     "resetStats": "통계 재설정",
     "getApiKey": "API 키 받기",
     "checkConnection": "연결 확인",

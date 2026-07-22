@@ -92,6 +92,7 @@
     "keepBoth": "Mantener ambos",
     "copySolution": "Copiar solución",
     "copy": "Copiar",
+    "paste": "Pegar",
     "resetStats": "Reiniciar estadísticas",
     "getApiKey": "Obtener clave API",
     "checkConnection": "Verificar conexión",

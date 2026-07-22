@@ -73,7 +73,16 @@
     "notesCreated": "✅ NOTES.ino créé !",
     "highCostWarning": "Coût estimé (sans réponse) : ${0} avec {1}. Continuer ?",
     "codeApplied": "Code appliqué",
-    "nodePathSaved": "Chemin Node.js enregistré"
+    "nodePathSaved": "Chemin Node.js enregistré",
+    "customEndpointPrompt": "Entrer l'URL du point de terminaison API (compatible OpenAI)",
+    "customEndpointPlaceholder": "https://api.example.com",
+    "customEndpointRequired": "L'URL du point de terminaison est requise",
+    "customEndpointInvalid": "Veuillez entrer une URL valide (ex: https://api.example.com)",
+    "customApiKeyPrompt": "Entrer votre clé API",
+    "customApiKeyPlaceholder": "sk-...",
+    "customApiKeyRequired": "La clé API est requise",
+    "customModelPrompt": "Entrer l'ID du modèle (laisser vide pour la valeur par défaut)",
+    "customModelPlaceholder": "gpt-4, claude-3-opus, etc."
   },
   "buttons": {
     "chooseModel": "Choisir le modèle IA",
@@ -92,6 +101,7 @@
     "keepBoth": "Garder les deux",
     "copySolution": "Copier la solution",
     "copy": "Copier",
+    "paste": "Coller",
     "resetStats": "Réinitialiser les statistiques",
     "getApiKey": "Obtenir la clé API",
     "checkConnection": "Vérifier la connexion",

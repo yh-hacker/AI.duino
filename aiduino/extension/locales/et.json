@@ -92,6 +92,7 @@
     "keepBoth": "Säilita mõlemad",
     "copySolution": "Kopeeri lahendus",
     "copy": "Kopeeri",
+    "paste": "Kleebi",
     "resetStats": "Lähtesta statistika",
     "getApiKey": "Hangi API võti",
     "checkConnection": "Kontrolli ühendust",

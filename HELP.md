@@ -2,6 +2,27 @@
 Some hints on how to use AI.duino.  
 More coming soon.
 
+## NVIDIA BUILD Platform (V2.8.0)
+
+AI.duino now supports the NVIDIA BUILD platform, providing access to DeepSeek-V4-Pro and DeepSeek-V4-Flash models.
+
+### Getting Started
+
+1. **Get API Key**: Visit https://integrate.api.nvidia.com to obtain your NVIDIA API key
+2. **Select NVIDIA BUILD**: In AI.duino's model selection menu, choose "NVIDIA BUILD"
+3. **Enter API Key**: Paste your NVIDIA API key when prompted
+
+### Available Models
+
+* **DeepSeek V4 Pro**: High-performance model for complex tasks
+* **DeepSeek V4 Flash**: Faster, more cost-effective model for everyday use
+
+### Notes
+
+* NVIDIA BUILD API keys start with `nvapi-` prefix
+* The API endpoint is `integrate.api.nvidia.com`
+* Model discovery is static — models are pre-defined in the configuration
+
 ## Custom OpenAI-Compatible API
 
 AI.duino now supports custom OpenAI-compatible API endpoints, allowing you to use any AI provider that implements the `/v1/chat/completions` endpoint.
