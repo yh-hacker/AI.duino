@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.2
+* Added DeepSeek model provider support (🐳)
+* Supports DeepSeek Chat, DeepSeek Coder, DeepSeek R1, DeepSeek V3, DeepSeek V4, and DeepSeek V4 Flash models
+* Default API endpoint: `https://api.deepseek.com/v1`
+* Users only need to provide API key and select model
+
 ## 2.8.1
 * Fixed API endpoint path handling for local providers
 * Now supports both URLs with and without `/v1` path suffix (e.g., `https://api.deepseek.com` and `https://api.deepseek.com/v1`)

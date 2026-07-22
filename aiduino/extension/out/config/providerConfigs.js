@@ -1324,6 +1324,76 @@ const PROVIDER_CONFIGS = {
         }
     },
 
+    deepseek: {
+        name: 'DeepSeek',
+        icon: '🐳',
+        color: '#00AEEF',
+        keyFile: '.aiduino-deepseek-api-key',
+        keyPrefix: 'sk-',
+        keyMinLength: 20,
+        hostname: 'api.deepseek.com',
+        apiKeyUrl: 'https://platform.deepseek.com/api_keys',
+        path: '/v1/models',
+        requiresModelSelection: true,
+        headers: (key) => ({ 'Authorization': `Bearer ${key}` }),
+        availableModels: [
+            {
+                id: 'deepseek-v4-pro',
+                name: 'DeepSeek V4 Pro',
+            },
+            {
+                id: 'deepseek-v4-flash',
+                name: 'DeepSeek V4 Flash',
+            }
+        ],
+        extractModels: (data) => data.data || [],
+        selectBest: (models) => models.find(m => m.id.includes('deepseek-v4-pro')) || models[0],
+        fallback: 'deepseek-v4-flash',
+        modelDiscovery: {
+            enabled: false,
+            staticModels: [
+                { id: 'deepseek-v4-pro', name: 'DeepSeek V4 Pro', displayName: 'DeepSeek V4 Pro', pricing: { input: 0.50 / 1000000, output: 2.00 / 1000000 } },
+                { id: 'deepseek-v4-flash', name: 'DeepSeek V4 Flash', displayName: 'DeepSeek V4 Flash', pricing: { input: 0.15 / 1000000, output: 0.60 / 1000000 } }
+            ],
+            selectDefault: (models) => models.find(m => m.id === 'deepseek-v4-flash') || models[0]
+        },
+        prices: {
+            input: 0.50 / 1000000,
+            output: 2.00 / 1000000
+        },
+        apiConfig: {
+            apiPath: '/v1/chat/completions',
+            method: 'POST',
+            headers: (key) => ({
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${key}`
+            }),
+            buildRequest: (modelId, prompt, systemPrompt) => {
+                const messages = [];
+                if (systemPrompt && typeof systemPrompt === 'string' && systemPrompt.trim()) {
+                    messages.push({ role: "system", content: systemPrompt.trim() });
+                }
+                messages.push({ role: "user", content: prompt });
+                return {
+                    model: modelId,
+                    messages: messages,
+                    max_tokens: 2000,
+                    temperature: 0.7
+                };
+            },
+            extractResponse: (data) => {
+                if (data.error) {
+                    const msg = data.error.message || data.error.code || JSON.stringify(data.error);
+                    throw new Error(msg);
+                }
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    return data.choices[0].message.content;
+                }
+                throw new Error('Unexpected DeepSeek API response format');
+            }
+        }
+    },
+
     custom: {
         name: 'Custom OpenAI',
         icon: '🔧',
