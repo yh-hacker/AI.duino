@@ -109,11 +109,15 @@ function extractCodeFromResponse(response, fallbackToFullResponse = true) {
  * @param {string} prompt - Prompt to send to AI
  * @param {string} progressKey - Translation key for progress message
  * @param {Object} context - Extension context with dependencies
+ * @param {Object} options - Additional options
+ * @param {boolean} options.useCodeTemperature - Use code temperature setting
+ * @param {Function} options.onChunk - Callback for streaming response chunks
  * @returns {Promise<string>} AI response
  */
 async function callAIWithProgress(prompt, progressKey, context, options = {}) {
     const { t, minimalModelManager, currentModel } = context;
     const model = minimalModelManager.providers[currentModel];
+    const { onChunk } = options;
     
     // Estimate costs before API call
     const TokenManager = require('../core/tokenManager');
@@ -160,7 +164,7 @@ async function callAIWithProgress(prompt, progressKey, context, options = {}) {
                         ...context.settings,
                         get: (key) => {
                             if (key === 'temperature') {
-                                return codeTemp;  // ← Nutze die Variable
+                                return codeTemp;
                             }
                             return context.settings.get(key);
                         }
@@ -180,7 +184,8 @@ async function callAIWithProgress(prompt, progressKey, context, options = {}) {
                 };
             } 
             
-            const result = await effectiveContext.callAI(prompt, effectiveContext);
+            // Pass onChunk callback for streaming support
+            const result = await effectiveContext.callAI(prompt, effectiveContext, { onChunk });
             
             // Handle both string responses and object responses (e.g., from Claude Code with sessionId)
             if (typeof result === 'string') {
@@ -190,7 +195,7 @@ async function callAIWithProgress(prompt, progressKey, context, options = {}) {
                 if (result.sessionId) {
                     context.sessionId = result.sessionId;
                 }
-                return result.text;  // ← Return complete object!
+                return result.text;
             }
             
             // Fallback: return result as-is

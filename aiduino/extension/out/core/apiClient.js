@@ -24,11 +24,14 @@ class UnifiedAPIClient {
      * @param {string} modelId - Model identifier
      * @param {string} prompt - User prompt
      * @param {Object} context - Extension context with dependencies
+     * @param {Object} options - Optional parameters
+     * @param {Function} options.onChunk - Callback for streaming chunks
      * @returns {Promise<string>} AI response text
      */
-    async callAPI(modelId, prompt, context) {
+    async callAPI(modelId, prompt, context, options = {}) {
         const { minimalModelManager } = context;
         const provider = minimalModelManager.providers[modelId];
+        const { onChunk } = options;
     
         // Route to local or remote
         if (provider.type === 'local') {
@@ -47,29 +50,32 @@ class UnifiedAPIClient {
         
         for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
             try {
-                const response = await this.makeRequest(config, t);
-                const extracted = this.extractResponse(modelId, response, minimalModelManager);
+                let extractedText;
+                
+                // Use streaming request if onChunk callback is provided
+                if (typeof onChunk === 'function') {
+                    extractedText = await this.makeStreamingRequest(config, t, onChunk);
+                } else {
+                    const response = await this.makeRequest(config, t);
+                    const extracted = this.extractResponse(modelId, response, minimalModelManager);
+                    extractedText = extracted.text;
+                }
                 
                 // Handle token usage
                 if (tokenManager) {
-                    let usage = extracted.usage;
-                    
-                    // If API didn't provide token counts, estimate them
-                    if (!usage) {
-                        const TokenManager = require('./tokenManager');
-                        usage = {
-                            inputTokens: TokenManager.estimateTokens(prompt, settings),
-                            outputTokens: TokenManager.estimateTokens(extracted.text, settings),
-                            estimated: true
-                        };
-                    }
+                    const TokenManager = require('./tokenManager');
+                    const usage = {
+                        inputTokens: TokenManager.estimateTokens(prompt, settings),
+                        outputTokens: TokenManager.estimateTokens(extractedText, settings),
+                        estimated: true
+                    };
                     
                     tokenManager.update(modelId, usage);
                     context.updateStatusBar?.();
                 }
                 
                 this._triggerSupportHint(context);
-                return extracted.text;
+                return extractedText;
             } catch (error) {
                 if (attempt === this.maxRetries || !this.isRetryableError(error)) {
                     throw this.enhanceError(modelId, error, minimalModelManager, t);
@@ -158,6 +164,140 @@ class UnifiedAPIClient {
                         error.parseError = e.message;
                         reject(error);
                     }
+                });
+            });
+    
+            req.on('error', (e) => {
+                clearTimeout(timeout);
+                reject(handleNetworkError(e, t)); 
+            });
+
+            const timeout = setTimeout(() => {
+                req.destroy();
+                const timeoutError = new Error(t('errors.timeout'));
+                timeoutError.type = 'NETWORK_ERROR';  
+                timeoutError.code = 'ETIMEDOUT'; 
+                reject(timeoutError);
+            }, this.timeout);
+    
+            req.write(data);
+            req.end();
+        });
+    }
+
+    /**
+     * Make streaming HTTP request (Server-Sent Events)
+     * @param {Object} config - Request configuration
+     * @param {Function} t - Translation function
+     * @param {Function} onChunk - Callback for each streaming chunk
+     * @returns {Promise<string>} Complete response text
+     */
+    async makeStreamingRequest(config, t, onChunk) {
+        return new Promise((resolve, reject) => {
+            const body = { ...config.body, stream: true };
+            const data = JSON.stringify(body);
+        
+            // Determine port and protocol from config
+            let port = config.port || 443;
+            let useHttps = config.useHttps !== false; // Default to HTTPS
+            
+            // If hostname contains port, extract it
+            let hostname = config.hostname;
+            if (hostname && hostname.includes(':')) {
+                const parts = hostname.split(':');
+                hostname = parts[0];
+                port = parseInt(parts[1]) || port;
+                // If port is 80, use HTTP
+                if (port === 80) {
+                    useHttps = false;
+                }
+            }
+            
+            const options = {
+                hostname: hostname,
+                port: port,
+                path: config.path,
+                method: 'POST',
+                headers: {
+                    ...config.headers,
+                    'Content-Length': Buffer.byteLength(data),
+                    'Accept': 'text/event-stream',
+                    'Cache-Control': 'no-cache',
+                    'Connection': 'keep-alive'
+                }
+            };
+    
+            // Use appropriate protocol
+            const httpModule = useHttps ? https : require('http');
+            const req = httpModule.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                // Handle non-200 status
+                if (res.statusCode !== 200) {
+                    let errorData = '';
+                    res.on('data', (chunk) => { errorData += chunk; });
+                    res.on('end', () => {
+                        try {
+                            const parsedData = JSON.parse(errorData);
+                            reject(this.createHttpError(res.statusCode, parsedData));
+                        } catch (e) {
+                            const error = new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`);
+                            error.statusCode = res.statusCode;
+                            error.responsePreview = errorData.substring(0, 200);
+                            reject(error);
+                        }
+                    });
+                    return;
+                }
+
+                let buffer = '';
+                let fullResponse = '';
+    
+                res.on('data', (chunk) => {
+                    buffer += chunk.toString();
+                    
+                    // Split by newlines and process each line
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // Keep incomplete line for next chunk
+                    
+                    for (const line of lines) {
+                        // Skip empty lines and non-data lines
+                        if (!line.trim() || !line.startsWith('data:')) {
+                            if (line.trim() === '[DONE]') {
+                                // Stream ended
+                                resolve(fullResponse);
+                                return;
+                            }
+                            continue;
+                        }
+                        
+                        // Extract JSON data from "data: {...}"
+                        const jsonStr = line.substring(5).trim();
+                        if (!jsonStr) continue;
+                        
+                        try {
+                            const parsed = JSON.parse(jsonStr);
+                            
+                            // Extract content from the chunk
+                            let content = '';
+                            if (parsed.choices && parsed.choices[0]) {
+                                content = parsed.choices[0].message?.content || 
+                                           parsed.choices[0].delta?.content || '';
+                            }
+                            
+                            if (content && typeof onChunk === 'function') {
+                                onChunk(content);
+                            }
+                            
+                            fullResponse += content;
+                        } catch (e) {
+                            // Ignore parse errors for incomplete chunks
+                        }
+                    }
+                });
+    
+                res.on('end', () => {
+                    resolve(fullResponse);
                 });
             });
     

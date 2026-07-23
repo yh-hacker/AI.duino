@@ -1,11 +1,15 @@
 # Changelog
 
+## 2.9.0
+* Added streaming response support for AI Chat
+* AI Chat now updates the active assistant message progressively while the response is being generated
+* Falls back to the existing full-response behavior for providers that do not support streaming
+
 ## 2.8.2
 * Added DeepSeek model provider support (🐳)
-* Supports DeepSeek Chat, DeepSeek Coder, DeepSeek R1, DeepSeek V3, DeepSeek V4, and DeepSeek V4 Flash models
+* Supports DeepSeek V4 Pro, and DeepSeek V4 Flash models
 * Default API endpoint: `https://api.deepseek.com/v1`
 * Users only need to provide API key and select model
-
 ## 2.8.1
 * Fixed API endpoint path handling for local providers
 * Now supports both URLs with and without `/v1` path suffix (e.g., `https://api.deepseek.com` and `https://api.deepseek.com/v1`)

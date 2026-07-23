@@ -269,6 +269,27 @@ class ChatHistoryManager {
         // Save
         this.saveChatFile(chatId, prunedMessages);
         this.saveIndex();
+        
+        return message.id;
+    }
+
+    /**
+     * Update an existing message by ID
+     * @param {number} messageId - Message ID to update
+     * @param {string} newText - New message text
+     */
+    updateMessage(messageId, newText) {
+        if (!this.index.activeChat) return;
+        
+        const chatId = this.index.activeChat;
+        const messages = this.loadChatFile(chatId);
+        
+        const message = messages.find(m => m.id === messageId);
+        if (message) {
+            message.text = newText;
+            this.saveChatFile(chatId, messages);
+            this.saveIndex();
+        }
     }
 
     /**

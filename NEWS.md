@@ -2,9 +2,10 @@
 
 ## 2026
 
-* **22.07.2026** **Release V2.8.2** adds DeepSeek model provider support with 🐳 icon. Supports DeepSeek Chat, Coder, R1, V3, V4, and V4 Flash models.
+* **23.07.2026** **Release V2.9.0** adds streaming response support. AI responses now appear character by character in real-time.
+* **22.07.2026** **Release V2.8.2** adds DeepSeek model provider support. Supports DeepSeek V4 Pro, and V4 Flash models.
 * **22.07.2026** **Release V2.8.1** fixes API endpoint path handling for local providers. Now supports URLs with or without `/v1` suffix.
-* **22.07.2026** **Release V2.8.0** adds NVIDIA BUILD platform support with DeepSeek-V4-Pro and DeepSeek-V4-Flash models. Includes bug fixes.
+* **22.07.2026** **Release V2.8.0** adds NVIDIA BUILD platform support with DeepSeek-V4-Pro and DeepSeek-V4-Flash and more models. Includes bug fixes.
 * **22.07.2026** **Release V2.7.1** adds custom OpenAI-compatible API support. Use any AI provider implementing `/v1/chat/completions`.
 * **31.05.2026** **Release V2.7.0** brings new Semantic Anchors feature. See the prompt editor.    
 * **30.05.2026** **Release V2.6.9** with npm-based providers bugfix.

@@ -14,9 +14,10 @@ const modelDiscovery = require('./modelDiscovery');
  * or apiClient for HTTP-based providers (Claude API, ChatGPT, etc.)
  * @param {string} prompt - The prompt to send to AI
  * @param {Object} context - Extension context with dependencies
+ * @param {Object} options - Optional parameters (onChunk for streaming)
  * @returns {Promise} AI response promise
  */
-function callAI(prompt, context) {
+function callAI(prompt, context, options = {}) {
     const { apiClient, agenticClient, currentModel, minimalModelManager } = context;
     const provider = minimalModelManager.providers[currentModel];
     
@@ -25,7 +26,7 @@ function callAI(prompt, context) {
         return agenticClient.callAgent(currentModel, prompt, context);
     }
     
-    return apiClient.callAPI(currentModel, prompt, context);
+    return apiClient.callAPI(currentModel, prompt, context, options);
 }
 
 /**

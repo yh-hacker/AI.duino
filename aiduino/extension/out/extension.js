@@ -595,7 +595,7 @@ function getDependencies() {
     return {
         // Core functions
         t,
-        callAI: (prompt, contextOverride) => apiManager.callAI(prompt, contextOverride || getDependencies()),
+        callAI: (prompt, contextOverride, options) => apiManager.callAI(prompt, contextOverride || getDependencies(), options),
         handleApiError: (error) => errorHandling.handleApiError(error, getDependencies()),
         
         // System configuration

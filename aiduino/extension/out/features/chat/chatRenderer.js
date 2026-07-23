@@ -249,7 +249,7 @@ function generateChatHTML(chatHistory, minimalModelManager, hasApiKey, context, 
         }
 
         messagesHTML += `
-            <div class="message ${isUser ? 'user-message' : `ai-message style-${messageStyle}`}">
+            <div class="message ${isUser ? 'user-message' : `ai-message style-${messageStyle}`}" data-message-id="${msg.id}">
                 <div class="message-header">
                     <span class="sender">${isUser ? `👤 ${t('chat.you')}` : `🤖 ${modelName}`}</span>
                     <span class="timestamp">${timeStr}</span>
@@ -563,6 +563,19 @@ function generateChatHTML(chatHistory, minimalModelManager, hasApiKey, context, 
                         const container = document.getElementById('attachmentButtons');
                         if (container) {
                             container.innerHTML = message.buttonsHtml;
+                        }
+                    }
+
+                    if (message.command === 'streamingUpdate') {
+                        const { messageId, content } = message;
+                        const selector = '[data-message-id="' + messageId + '"]';
+                        const messageElement = document.querySelector(selector);
+                        if (messageElement) {
+                            const contentElement = messageElement.querySelector('.message-content');
+                            if (contentElement) {
+                                contentElement.innerHTML = content.replace(/\n/g, '<br>');
+                                scrollToBottom();
+                            }
                         }
                     }
                 });

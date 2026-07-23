@@ -161,6 +161,8 @@ async function handleUserMessage(userText, panel, context, state) {
         }
     
         let result;
+        let streamingResponse = '';
+        let tempMessageId = null;
         
         if (state.agenticMode && isAgentic && context.agenticClient) {
             // Agentic mode with compile loop
@@ -186,11 +188,30 @@ async function handleUserMessage(userText, panel, context, state) {
             }
             result = result.response;
         } else {
+            // Initialize streaming response
+            streamingResponse = '';
+            
+            // Create a temporary AI message for streaming
+            tempMessageId = state.historyManager.addMessage('ai', '', null, actualCurrentModel);
+            
+            // Create onChunk callback for streaming
+            const onChunk = (chunk) => {
+                streamingResponse += chunk;
+                // Update the temporary message with accumulated content
+                state.historyManager.updateMessage(tempMessageId, streamingResponse);
+                // Send partial update to webview
+                panel.webview.postMessage({
+                    command: 'streamingUpdate',
+                    messageId: tempMessageId,
+                    content: streamingResponse
+                });
+            };
+            
             result = await featureUtils.callAIWithProgress(
                 prompt, 
                 'progress.askingAI', 
                 context,
-                { useCodeTemperature: state.chatCodeMode }
+                { useCodeTemperature: state.chatCodeMode, onChunk }
             );
         }
         
@@ -219,7 +240,10 @@ async function handleUserMessage(userText, panel, context, state) {
             // state.historyManager.addMessage('system', context.t('chat.newSessionStarted'), null, actualCurrentModel);
         }
     
-        state.historyManager.addMessage('ai', result, null, actualCurrentModel);
+        // Only add message if not already added via streaming
+        if (!streamingResponse) {
+            state.historyManager.addMessage('ai', result, null, actualCurrentModel);
+        }
 
         state.updatePanelContent(panel, context);
     } catch (error) {
